@@ -41,3 +41,14 @@ def test_signup_duplicate_is_rejected():
 
     assert response.status_code == 400
     assert "already signed up" in response.json()["detail"].lower()
+
+
+def test_signup_when_activity_is_full_is_rejected():
+    reset_activities()
+    activity = activities["Chess Club"]
+    activity["participants"] = [f"student{i}@mergington.edu" for i in range(activity["max_participants"])]
+
+    response = client.post("/activities/Chess Club/signup?email=newstudent@mergington.edu")
+
+    assert response.status_code == 400
+    assert "full" in response.json()["detail"].lower()
